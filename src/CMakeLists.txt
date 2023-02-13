@@ -5,10 +5,10 @@ option(WITH_SHARED_MODULE_LIB "Build shared libraries in the module" OFF)
 # compiler configuration
 if(CMAKE_VERSION VERSION_LESS "3.1")
   if(CMAKE_CXX_COMPILER_ID STREQUAL "GUN")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
   endif()
 else()
-  set(CMAKE_CXX_STANDARD 11)
+  set(CMAKE_CXX_STANDARD 14)
 endif()
 
 include_directories(

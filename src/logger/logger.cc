@@ -26,13 +26,16 @@ void CustomLogPrefix(std::ostream &s, const google::LogMessageInfo &l,
     << std::setw(2) << l.time.sec() 
     << ']'
     << '[' << l.filename << ':' << l.line_number << ']'
-    << '[' << l.severity << ']'
-    << std::setw(10 - strlen(l.severity)) << std::setfill(' ');
+    << '[' << l.severity << ']';
+    // << std::setw(10 - strlen(l.severity)) << std::setfill(' ');
 }
 
 void Logger_Init(const char* app) {
+  // 设置仅向stderr输出日志
   FLAGS_logtostderr = 1;
+  // 设置向stderr输出颜色日志
   FLAGS_colorlogtostderr = 1;
-  FLAGS_minloglevel = 0;
+  // 控制输出日志的最小等级， INFO = 0, WARNING = 1, ERROR = 2
+  FLAGS_minloglevel = google::INFO;
   google::InitGoogleLogging(app, &CustomLogPrefix);
 }
