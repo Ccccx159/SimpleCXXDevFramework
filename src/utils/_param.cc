@@ -8,13 +8,16 @@
 namespace utils {
 Param::Param(const int& argc, char** argv, const char* sopt,
              const struct option lopt[], fn_paramParse& f) {
+  if (argc <= 1) {
+    LOG(WARNING) << "no params waiting to be parsed...";
+  }
   int c = 0;
   while (1) {
     int optIdx = 0;
     c = getopt_long(argc, argv, sopt, lopt, &optIdx);
 
     if (-1 == c) {
-      LOG(WARNING) << "no more params waiting to be parsed...";
+      DLOG(WARNING) << "no more params waiting to be parsed...";
       break;
     }
 
@@ -47,6 +50,7 @@ int Param::ParseParams(const int& argc, const char** argv) {
     origParam += a;
     origParam += ' ';
   });
+  origParam = origParam.substr(0, origParam.length());
   DLOG(INFO) << "origin argv string is: [" << origParam << ']';
 
   std::vector<std::string> argList;
@@ -60,41 +64,52 @@ int Param::ParseParams(const int& argc, const char** argv) {
   }
   std::for_each(argList.begin(), argList.end(),
                 [](auto e) { DLOG(INFO) << e; });
-  std::string key, val, tmpArg;
+  std::string key, val;
   size_t tmpPos = 0;
-  for(auto it = argList.begin();it != argList.end(); it++) {
-    tmpArg = *it;
-    if (tmpArg[0] == '-' && tmpArg[1] == '-') {
-      if ((tmpPos = tmpArg.find('=')) != tmpArg.npos) {
-        key = tmpArg.substr(2, tmpPos - 2);
-        val = tmpArg.substr(tmpPos + 1, tmpArg.length() + tmpPos);
+  for (auto pos = 0; pos < argList.size(); pos++) {
+    auto& a = argList[pos];
+    if (a.length() < 2) {
+      LOG(ERROR) << "?? Wrong option with " << a << "??";
+      break;
+    }
+    if (a[0] == '-' && a[1] == '-') {
+      if ((tmpPos = a.find('=')) != a.npos) {
+        key = a.substr(2, tmpPos - 2);
+        val = a.substr(tmpPos + 1, a.length() - tmpPos);
       } else {
-        key = tmpArg.substr(2, tmpArg.length() - 1);
-        auto nextIt = it + 1;
-        if ((*nextIt)[0] == '-') {
-          val = "null";
+        key = a.substr(2, a.length() - 1);
+        if (pos + 1 < argList.size()) {
+          auto& n_a = argList[pos + 1];
+          if (n_a[0] == '-') {
+            val = "null";
+          } else {
+            val = n_a;
+            pos++;
+          }
         } else {
-          val = *nextIt;
-          it++;
+          val = "null";
         }
       }
-    } else if (tmpArg[0] == '-' && tmpArg[1] != '-') {
-      key = tmpArg[1];
-      if (tmpArg.length() > 2) {
-        val = tmpArg.substr(2, tmpArg.length() - 1);
+    } else if (a[0] == '-' && a[1] != '-') {
+      key = a[1];
+      if (a.length() > 2) {
+        val = a.substr(2, a.length() - 1);
       } else {
-        auto nextIt = it + 1;
-        if ((*nextIt)[0] == '-') {
-          val = "null";
-        } else {
-          val = *nextIt;
-          it++;
+        if (pos + 1 < argList.size()) {
+          auto& n_a = argList[pos + 1];
+          if (n_a[0] == '-') {
+            val = "null";
+          } else {
+            val = n_a;
+            pos++;
+          }
         }
       }
     } else {
-      LOG(ERROR) << "argv: " << *it << "is wrong!";
+      LOG(ERROR) << "?? Wrong Option with " << a << "??";
+      break;
     }
-    DLOG(INFO) << "param: key: " << key << ", val: " << val;
+    DLOG(INFO) << "Option: " << key << ", Param: " << val;
     _params.emplace(std::make_pair(key, val));
   }
   return 0;

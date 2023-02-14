@@ -44,6 +44,7 @@ add_subdirectory(src)
 
 if(BUILD_TESTS)
   message(INFO "--------------------------------------")
+  message(INFO "Build Unittest ON")
   add_subdirectory(test)
 endif()
 
