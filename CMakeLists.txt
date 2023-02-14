@@ -19,6 +19,10 @@ if (NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "Choose Release or Debug" FORCE)
 endif()
 
+if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+  add_compile_options(-O0)
+endif()
+
 message(STATUS "Build type: " ${CMAKE_BUILD_TYPE})
 
 message(INFO "--------------------------------------")
