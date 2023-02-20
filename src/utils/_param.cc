@@ -39,9 +39,11 @@ int Param::QueryParams(const std::string& opt,
 }
 
 void Param::PrintParams(void) {
-  std::for_each(_params.begin(), _params.end(), [](auto& p) {
-    LOG(INFO) << "opt: -" << p.first << ' ' << "arg:  " << p.second;
-  });
+  std::for_each(_params.begin(), _params.end(),
+                [](const std::pair<std::string, std::string>& p) {
+                  LOG(INFO)
+                      << "opt: -" << p.first << ' ' << "arg:  " << p.second;
+                });
 }
 
 int Param::ParseParams(const int& argc, const char** argv) {
@@ -62,8 +64,10 @@ int Param::ParseParams(const int& argc, const char** argv) {
       prePos = curPos + 1;
     }
   }
+#ifdef NDEBUG
   std::for_each(argList.begin(), argList.end(),
-                [](auto e) { DLOG(INFO) << e; });
+                [](const std::string& e) { DLOG(INFO) << e; });
+#endif
   std::string key, val;
   size_t tmpPos = 0;
   for (auto pos = 0; pos < argList.size(); pos++) {

@@ -1,7 +1,6 @@
 #include "_file.hpp"
 
 #include <dirent.h>
-#include <sys/stat.h>
 
 #include <regex>
 
@@ -11,10 +10,10 @@ namespace utils {
 bool IsFileExisted(const std::string& f) {
   struct stat buf;
   if (0 != stat(f.c_str(), &buf)) {
-    LOG(WARNING) << "file [" << f << "] is NOT Existed O_o";
+    LOG(WARNING) << "file [" << f << "] is NOT Existed";
     return false;
   }
-  LOG(INFO) << "file [" << f << "] is Existed ^_^";
+  DLOG(INFO) << "file [" << f << "] is Existed";
   return true;
 }
 
@@ -25,7 +24,7 @@ int CreateEmptyFile(const std::string& f) {
     LOG(ERROR) << "Create file[" << f << "] failed!";
     return -1;
   }
-  LOG(INFO) << "File created Successfully~ [" << f << ']';
+  DLOG(INFO) << "File created Successfully~ [" << f << ']';
   _of.close();
   return 0;
 }
@@ -36,37 +35,46 @@ bool SearchFileRecursively(std::string& fp, const std::string& f,
                            const std::string& pattern) {
   if (depth <= 0) return false;
   struct dirent* end = nullptr;
-  std::string curDir(d + '/');
+  std::string curDir = d[d.length() - 1] == '/' ? d : d + '/';
   std::string tmpFile;
-  Dir* fDir = opendir(curDir.c_str());
+  DIR* fDir = opendir(curDir.c_str());
   if (nullptr == fDir) {
     LOG(ERROR) << "Open directory[" << curDir << "] failed!";
     return false;
   }
-  while (end = readdir(fDir) != nullptr) {
-    if (std::string(end->d_name) == '.' || std::string(end->d_name) == "..") {
+  while ((end = readdir(fDir)) != nullptr) {
+    if (std::string(end->d_name) == "." || std::string(end->d_name) == "..") {
       continue;
     }
     if (end->d_type == DT_DIR) {
-      return SearchFileRecursively(f, curDir + end.d_name, fp, depth - 1);
+      std::string nextDir = curDir + end->d_name;
+      if (true == SearchFileRecursively(fp, f, nextDir, depth - 1, pattern)) {
+        DLOG(INFO) << "Search file Successfully~ [" << fp << ']';
+        closedir(fDir);
+        return true;
+      }
+      continue;
     }
     tmpFile = end->d_name;
     if (pattern == "keyword") {
       if (tmpFile.npos != tmpFile.find(f)) {
         fp = curDir + tmpFile;
-        LOG(INFO) << "Search file Successfully~ [" << fp << ']';
+        DLOG(INFO) << "Search file Successfully~ [" << fp << ']';
+        closedir(fDir);
         return true;
       }
     } else if (pattern == "regex") {
       std::regex e(f);
-      if (std::regex_search(tmpFile, f)) {
+      if (std::regex_search(tmpFile, e)) {
         fp = curDir + tmpFile;
-        LOG(INFO) << "Search file Successfully~ [" << fp << ']';
+        DLOG(INFO) << "Search file Successfully~ [" << fp << ']';
+        closedir(fDir);
         return true;
       }
     }
   }
-  LOG(ERROR) << "File [" << f << "] can't be found under the dir[" << d << ']';
+  DLOG(ERROR) << "File [" << f << "] can't be found under the dir[" << d << ']';
+  closedir(fDir);
   return false;
 }
 
@@ -99,22 +107,71 @@ int ReadFromFile(const std::string& f, std::string& buf, std::ios::openmode m) {
 }
 
 // 截取不带扩展名的文件名
-std::string GetFileNameWithoutSuffix(const std::string& f,
-                                     const std::string& sf) {
-  std::string fn;
-  return fn;
+std::string GetFileNameWithoutSuffix(const std::string& f) {
+  std::string name;
+  std::string head;
+  size_t pos = f.rfind('/') == f.npos ? 0 : f.rfind('/') + 1;
+  name = f.substr(pos, f.length() - pos);
+  if ('.' == name[0]) {
+    name = name.substr(1, name.length() - 1);
+    head = ".";
+  }
+  pos = name.find('.') == f.npos ? name.length() : name.find('.');
+  name = name.substr(0, pos);
+  name = head + name;
+  // LOG(INFO) << "File's  name is [" << name << ']';
+  return name;
 }
 
 // 截取文件扩展名
 std::string GetSuffixFromFile(const std::string& f) {
-  std::string sf;
-  return sf;
+  std::string suffix;
+  size_t pos = f.rfind('/') == f.npos ? 0 : f.rfind('/') + 1;
+  suffix = f.substr(pos, f.length() - pos);
+  // 当文件名以 '.' 开头时，排除该 '.'
+  if ('.' == suffix[0]) suffix = suffix.substr(1, suffix.length() - 1);
+  pos =
+      suffix.find('.') == suffix.npos ? suffix.length() : suffix.find('.') + 1;
+  suffix = suffix.substr(pos, suffix.length() - pos);
+  return suffix;
 }
 
 // 列举指定目录下所有文件，
 std::vector<std::string> ListFilesInDir(const std::string& dir) {
   std::vector<std::string> fl;
+  DIR* fDir = opendir(dir.c_str());
+  if (nullptr == fDir) {
+    LOG(ERROR) << "Open directory[" << dir << "] failed!";
+    return fl;
+  }
+  struct dirent* end = nullptr;
+  while ((end = readdir(fDir)) != nullptr) {
+    if (end->d_type != DT_DIR) {
+      fl.push_back(dir[dir.length() - 1] == '/' ? dir + end->d_name
+                                                : dir + "/" + end->d_name);
+    }
+  }
+#ifdef NDEBUG
+  std::for_each(fl.begin(), fl.end(),
+                [](const std::string& it) { DLOG(INFO) << it; });
+#endif
+  closedir(fDir);
   return fl;
+}
+
+// 创建层级目录
+int MkdirsByPath(const std::string& p, mode_t m) {
+  if (access(p.c_str(), F_OK) == 0) {
+    // LOG(WARNING) << p << " already exist!";
+  } else {
+    int ret = MkdirsByPath(p.substr(0, p.rfind('/')), m);
+    if (0 == ret) {
+      ret = mkdir(p.c_str(), m);
+      LOG_IF(ERROR, 0 != ret) << "mkdir [" << p << "] Failed!";
+    }
+    return ret;
+  }
+  return 0;
 }
 
 }  // namespace utils

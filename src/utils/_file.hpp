@@ -1,5 +1,7 @@
 #pragma once
 
+#include <sys/stat.h>
+
 #include <fstream>
 #include <iomanip>
 #include <iostream>
@@ -19,8 +21,8 @@ bool IsFileExisted(const std::string& f);
 int CreateEmptyFile(const std::string& f);
 
 // 递归查找文件
-bool SearchFileRecursively(const std::string& f, const std::string& d,
-                           std::string& fp, int depth = 1,
+bool SearchFileRecursively(std::string& fp, const std::string& f,
+                           const std::string& d, int depth = 1,
                            const std::string& pattern = "keyword");
 
 // 读取文本内容
@@ -31,14 +33,17 @@ int ReadFromFile(const std::string& f, std::string& buf,
                  std::ios::openmode m = std::ios::in);
 
 // 截取不带扩展名的文件名
-std::string GetFileNameWithoutSuffix(const std::string& f,
-                                      const std::string& sf);
+std::string GetFileNameWithoutSuffix(const std::string& f);
 
 // 截取文件扩展名
 std::string GetSuffixFromFile(const std::string& f);
 
 // 列举指定目录下所有文件，
 std::vector<std::string> ListFilesInDir(const std::string& dir);
+
+// 创建层级目录
+int MkdirsByPath(const std::string& p,
+                 mode_t mode = S_IRWXU | S_IRWXG | S_IRWXO);
 
 // 写文件
 template <typename T>

@@ -6,6 +6,7 @@ hello_app_extract_version()
 project(HelloApp VERSION ${HELLO_APP_VERSION} LANGUAGES CXX)
 
 option(BUILD_TESTS "Build with tests" OFF)
+option(ASAN_MEM_CHECK "Check memory with asan" OFF)
 
 message(INFO "--------------------------------------")
 message(STATUS "Build HelloApp: " ${HELLO_APP_VERSION})
@@ -13,6 +14,12 @@ message(STATUS "Build with Tests: " ${BUILD_TESTS})
 message(STATUS "CMAKE_INSTALL_PREFIX: " ${CMAKE_INSTALL_PREFIX})
 if (NOT CMAKE_TOOLCHAIN_FILE)
   message(STATUS "CMAKE_TOOLCHAIN_FILE: " ${CMAKE_TOOLCHAIN_FILE})
+endif()
+
+if (ASAN_MEM_CHECK)
+  set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "Choose Release or Debug" FORCE)
+  add_compile_options(-fsanitize=address -fno-omit-frame-pointer)
+  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=address")
 endif()
 
 if (NOT CMAKE_BUILD_TYPE)
