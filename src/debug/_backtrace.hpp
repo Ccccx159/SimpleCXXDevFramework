@@ -10,7 +10,7 @@
 
 #include "logger/logger.hpp"
 
-namespace utils {
+namespace myutils {
 
 #define BACKTRACE_STACK_MAX_SIZE (16)
 
@@ -54,4 +54,4 @@ class Backtrace {
 
 auto& INSTANCE_OF_BACKTRACE = Backtrace::GetBacktraceInstance();
 
-}  // namespace utils
+}  // namespace myutils

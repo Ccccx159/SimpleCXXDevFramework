@@ -11,7 +11,7 @@ foreach(source_file ${unittest_sources_list})
   STRING(REGEX REPLACE ".+/(.*)\\.c.+" "\\1" unittest_name ${source_file})
   add_executable(${unittest_name} ${source_file})
   set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/unittest)
-  target_link_libraries(${unittest_name} module_logger module_utils)
+  target_link_libraries(${unittest_name} myutils)
   install(TARGETS ${unittest_name}
           RUNTIME DESTINATION unittest
           )

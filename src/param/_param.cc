@@ -5,7 +5,7 @@
 
 #include "logger/logger.hpp"
 
-namespace utils {
+namespace myutils {
 Param::Param(const int& argc, char** argv, const char* sopt,
              const struct option lopt[], fn_paramParse& f) {
   if (argc <= 1) {
@@ -56,7 +56,7 @@ int Param::ParseParams(const int& argc, const char** argv) {
   DLOG(INFO) << "origin argv string is: [" << origParam << ']';
 
   std::vector<std::string> argList;
-  for (int prePos = 0, curPos = 0; curPos < origParam.length(); curPos++) {
+  for (size_t prePos = 0, curPos = 0; curPos < origParam.length(); curPos++) {
     if (origParam[curPos] != ' ') {
       continue;
     } else {
@@ -70,7 +70,7 @@ int Param::ParseParams(const int& argc, const char** argv) {
 #endif
   std::string key, val;
   size_t tmpPos = 0;
-  for (auto pos = 0; pos < argList.size(); pos++) {
+  for (size_t pos = 0; pos < argList.size(); pos++) {
     auto& a = argList[pos];
     if (a.length() < 2) {
       LOG(ERROR) << "?? Wrong option with " << a << "??";
@@ -119,4 +119,4 @@ int Param::ParseParams(const int& argc, const char** argv) {
   return 0;
 }
 
-}  // namespace utils
+}  // namespace myutils

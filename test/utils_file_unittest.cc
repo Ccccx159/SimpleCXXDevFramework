@@ -2,9 +2,8 @@
 
 #include <sys/stat.h>
 
-#include "logger/logger.hpp"
 #include "nlohmann/json.hpp"
-#include "utils/_file.hpp"
+#include "myutils.hpp"
 
 using json = nlohmann::json;
 
@@ -43,7 +42,7 @@ int Test_WriteJsonFile() {
        {{"country", "China"}, {"province", "Zhejiang"}, {"city", "Hangzhou"}}},
       {"sex", "male"},
       {"age", 18}};
-  CHECK_GT(utils::WriteToFile("./.TempJsonFile.json", j), 0)
+  CHECK_GT(myutils::WriteToFile("./.TempJsonFile.json", j), 0)
       << "Test Write Json File Failed!";
   LOG(INFO) << "Test Write Json File Successfully!";
   return 0;
@@ -51,14 +50,14 @@ int Test_WriteJsonFile() {
 
 int Test_ReadJsonFile() {
   json j;
-  CHECK_GT(utils::ReadFromFile("./.TempJsonFile.json", j), 0)
+  CHECK_GT(myutils::ReadFromFile("./.TempJsonFile.json", j), 0)
       << "Test Read Json File Failed!";
   LOG(INFO) << "Test Read Json File Successfully!";
   return 0;
 }
 
 int Test_WriteTextFile() {
-  CHECK_GT(utils::WriteToFile("./.TempTextFile.txt", "This is a test string"),
+  CHECK_GT(myutils::WriteToFile("./.TempTextFile.txt", "This is a test string"),
            0)
       << "Test Write Text File Failed!";
   LOG(INFO) << "Test Write Text File Successfully!";
@@ -67,7 +66,7 @@ int Test_WriteTextFile() {
 
 int Test_ReadTextFile() {
   std::string s;
-  CHECK_GT(utils::ReadFromFile("./.TempTextFile.txt", s), 0)
+  CHECK_GT(myutils::ReadFromFile("./.TempTextFile.txt", s), 0)
       << "Test Read Text File Failed!";
   LOG(INFO) << "Test Read Text File Successfully!";
   return 0;
@@ -75,7 +74,7 @@ int Test_ReadTextFile() {
 
 int Test_MkdirsByPath() {
   const static std::string path("./.Temp/mkdir_test_dir");
-  CHECK_EQ(0, utils::MkdirsByPath(path)) << "Test Mkdirs By Path failed!";
+  CHECK_EQ(0, myutils::MkdirsByPath(path)) << "Test Mkdirs By Path failed!";
   struct stat statbuf;
   CHECK_EQ(0, stat(path.c_str(), &statbuf)) << "Test Mkdirs By Path failed!";
   LOG(INFO) << "Test Mkdirs By Path Successfully";
@@ -84,7 +83,7 @@ int Test_MkdirsByPath() {
 
 int Test_CreateEmptyFile() {
   const static std::string fp("./.Temp/test_create_file.txt");
-  CHECK_EQ(0, utils::CreateEmptyFile(fp)) << "Test Create Empty File Failed!";
+  CHECK_EQ(0, myutils::CreateEmptyFile(fp)) << "Test Create Empty File Failed!";
   struct stat statbuf;
   CHECK_EQ(0, stat(fp.c_str(), &statbuf)) << "Test Create Empty File Failed!";
   LOG(INFO) << "Test Create Empty File Successfully";
@@ -94,7 +93,7 @@ int Test_CreateEmptyFile() {
 int Test_IsFileExisted() {
   const static std::string fp("./.Temp/test_create_file.txt");
   struct stat statbuf;
-  CHECK_EQ(stat(fp.c_str(), &statbuf), static_cast<int>(!utils::IsFileExisted(fp))) << "Test Is File Existed Failed!";
+  CHECK_EQ(stat(fp.c_str(), &statbuf), static_cast<int>(!myutils::IsFileExisted(fp))) << "Test Is File Existed Failed!";
   LOG(INFO) << "Test Is File Existed Successfully!";
   return 0;
 }
@@ -104,11 +103,11 @@ int Test_SearchFileRecursively() {
   const static std::string f_regex("test.+");
   std::string fullpath;
   struct stat statbuf;
-  CHECK_EQ(true, utils::SearchFileRecursively(fullpath, f_keyword, "./", 3)) << "Test Search File Recursively By Keywords Failed!";
+  CHECK_EQ(true, myutils::SearchFileRecursively(fullpath, f_keyword, "./", 3)) << "Test Search File Recursively By Keywords Failed!";
   CHECK_EQ(0, stat(fullpath.c_str(), &statbuf)) << "Test Search File Recursively By Keywords Failed!";
   LOG(INFO) << "Test Search File Recursively By Keywords Successfully!";
 
-  CHECK_EQ(true, utils::SearchFileRecursively(fullpath, f_regex, "./", 3, "regex")) << "Test Search File Recursively By Regex Failed!";
+  CHECK_EQ(true, myutils::SearchFileRecursively(fullpath, f_regex, "./", 3, "regex")) << "Test Search File Recursively By Regex Failed!";
   CHECK_EQ(0, stat(fullpath.c_str(), &statbuf)) << "Test Search File Recursively By Regex Failed!";
   LOG(INFO) << "Test Search File Recursively By Regex Successfully!";
   return 0;
@@ -124,7 +123,7 @@ int Test_GetFileNameWithoutSuffix() {
 
   std::for_each(TEST_DATA_GETFILENAME.begin(), TEST_DATA_GETFILENAME.end(),
                 [](const std::pair<std::string, std::string>& it) {
-                  CHECK_EQ(utils::GetFileNameWithoutSuffix(it.first), it.second)
+                  CHECK_EQ(myutils::GetFileNameWithoutSuffix(it.first), it.second)
                       << it.first << " get file name failed!";
                 });
   LOG(INFO) << "Test GetFileNameWithoutSuffix successfully";
@@ -141,7 +140,7 @@ int Test_GetSuffixFromFile() {
 
   std::for_each(TEST_DATA_GETSUFFIX.begin(), TEST_DATA_GETSUFFIX.end(),
                 [](const std::pair<std::string, std::string>& it) {
-                  CHECK_EQ(utils::GetSuffixFromFile(it.first), it.second)
+                  CHECK_EQ(myutils::GetSuffixFromFile(it.first), it.second)
                       << it.first << " get file name failed!";
                 });
   LOG(INFO) << "Test GetSuffixFromFile successfully";
@@ -149,7 +148,7 @@ int Test_GetSuffixFromFile() {
 }
 
 int Test_ListFilesInDir() {
-  std::vector<std::string> fl = utils::ListFilesInDir("./");
+  std::vector<std::string> fl = myutils::ListFilesInDir("./");
   CHECK_GT(fl.size(), 0) << "Test ListFilesInDir Failed!";
   LOG(INFO) << "Test ListFilesInDir successfully";
   return 0;

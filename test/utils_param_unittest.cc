@@ -1,5 +1,4 @@
-#include "logger/logger.hpp"
-#include "utils/utils.hpp"
+#include "myutils.hpp"
 
 int main(int argc, char* argv[]) {
   Logger_Init(argv[0]);
@@ -12,7 +11,7 @@ int main(int argc, char* argv[]) {
                           {"optionC", required_argument, NULL, 'c'},
                           {0, 0, 0, 0}};
 
-  utils::Param::fn_paramParse f =
+  myutils::Param::fn_paramParse f =
       [lopt, &param_flag](const int& c, const int& i, const char* a) {
         switch (c) {
           case 0:
@@ -48,7 +47,7 @@ int main(int argc, char* argv[]) {
     });
     fullCmd[fullCmd.length() - 1] = '\0';
     LOG(INFO) << "full cmd is [" << fullCmd << ']';
-    utils::Param P(_argc[i], _argv[i], "ab:c:", lopt, f);
+    myutils::Param P(_argc[i], _argv[i], "ab:c:", lopt, f);
     P.PrintParams();
   }
 

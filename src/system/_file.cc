@@ -4,7 +4,7 @@
 
 #include <regex>
 
-namespace utils {
+namespace myutils {
 
 // 检查文件是否存在
 bool IsFileExisted(const std::string& f) {
@@ -161,9 +161,7 @@ std::vector<std::string> ListFilesInDir(const std::string& dir) {
 
 // 创建层级目录
 int MkdirsByPath(const std::string& p, mode_t m) {
-  if (access(p.c_str(), F_OK) == 0) {
-    // LOG(WARNING) << p << " already exist!";
-  } else {
+  if (access(p.c_str(), F_OK) != 0) {
     int ret = MkdirsByPath(p.substr(0, p.rfind('/')), m);
     if (0 == ret) {
       ret = mkdir(p.c_str(), m);
@@ -174,4 +172,4 @@ int MkdirsByPath(const std::string& p, mode_t m) {
   return 0;
 }
 
-}  // namespace utils
+}  // namespace myutils

@@ -45,8 +45,6 @@ endif()
 message(STATUS "HelloApp target os: " ${APP_TARGET_OS})
 message(STATUS "HelloApp target arch: " ${APP_TARGET_ARCH})
 
-# load_libglog(APP_TARGET_OS APP_TARGET_ARCH)
-
 message(INFO "--------------------------------------")
 add_subdirectory(3rdparty)
 

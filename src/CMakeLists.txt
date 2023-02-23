@@ -20,25 +20,31 @@ link_directories(
   # ${GLOG_LIBRARY_DIR}
 )
 
-if (WITH_SHARED_MODULE_LIB)
-  set(MODULE_LIBS_TYPE "SHARED" CACHE STRING "")
+if (WITH_SHARED_LIB)
+  set(BUILD_LIBS_TYPE "SHARED")
 else ()
-  set(MODULE_LIBS_TYPE "STATIC" CACHE STRING "")
+  set(BUILD_LIBS_TYPE "STATIC")
 endif()
 
 add_subdirectory(common)
 add_subdirectory(logger)
 add_subdirectory(thread)
-add_subdirectory(utils)
+add_subdirectory(debug)
+add_subdirectory(param)
+add_subdirectory(system)
 
-set(SRC_LIST ./main/main.cc)
-message(STATUS "This is BINARY dir " ${PROJECT_BINARY_DIR})
-message(STATUS "This is SOURCE dir " ${PROJECT_SOURCE_DIR})
-add_executable(HelloApp ${SRC_LIST})
-set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
-target_link_libraries(HelloApp module_logger module_thread module_utils)
+aux_source_directory(. CURRENT_DIR_SRCS)
+list(APPEND MYUTILS_SOURCES_LISTS ${CURRENT_DIR_SRCS})
+# message(STATUS ${MYUTILS_SOURCES_LISTS})
+# message(STATUS ${MODULE_LIBS_TYPE})
+add_library(myutils ${BUILD_LIBS_TYPE} ${MYUTILS_SOURCES_LISTS})
+target_link_libraries(myutils glog::glog nlohmann_json::nlohmann_json)
 
-install(TARGETS HelloApp
-  ARCHIVE DESTINATION lib
-  LIBRARY DESTINATION lib
-  RUNTIME DESTINATION bin)
+install(TARGETS myutils DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/
+  DESTINATION ${CMAKE_INSTALL_PREFIX}/include
+  FILES_MATCHING
+  PATTERN "*.h"
+  PATTERN "*.hpp"
+  PATTERN "CMakeLists.txt" EXCLUDE
+  )

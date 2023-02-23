@@ -6,7 +6,7 @@
 #include <string>
 #include <unordered_map>
 
-namespace utils {
+namespace myutils {
 
 class Param {
  public:
@@ -31,4 +31,4 @@ class Param {
   std::unordered_map<std::string, std::string> _params;
 };
 
-}  // namespace utils
+}  // namespace myutils

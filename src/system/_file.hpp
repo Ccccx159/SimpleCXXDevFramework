@@ -12,7 +12,7 @@
 
 using json = nlohmann::json;
 
-namespace utils {
+namespace myutils {
 
 // 检查文件是否存在
 bool IsFileExisted(const std::string& f);
@@ -63,4 +63,4 @@ int WriteToFile(const std::string& f, const T& buf,
 
 //
 
-}  // namespace utils
+}  // namespace myutils
