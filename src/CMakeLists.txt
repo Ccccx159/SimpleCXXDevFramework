@@ -32,6 +32,7 @@ add_subdirectory(thread)
 add_subdirectory(debug)
 add_subdirectory(param)
 add_subdirectory(system)
+add_subdirectory(container)
 
 aux_source_directory(. CURRENT_DIR_SRCS)
 list(APPEND MYUTILS_SOURCES_LISTS ${CURRENT_DIR_SRCS})
