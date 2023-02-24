@@ -21,3 +21,17 @@ function(hello_app_extract_version)
   set(HELLO_APP_VERSION_MAJOR ${ver_major} PARENT_SCOPE)
   set(HELLO_APP_VERSION "${ver_major}.${ver_minor}.${ver_patch}" PARENT_SCOPE)
 endfunction()
+
+macro(append_source_files)
+  aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR} CURRENT_DIR_SRCS)
+  list(APPEND MYUTILS_SOURCES_LISTS ${CURRENT_DIR_SRCS})
+  set(MYUTILS_SOURCES_LISTS ${MYUTILS_SOURCES_LISTS} PARENT_SCOPE)
+
+  install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    DESTINATION ${CMAKE_INSTALL_PREFIX}/include
+    FILES_MATCHING
+    PATTERN "*.h"
+    PATTERN "*.hpp"
+    PATTERN "CMakeLists.txt" EXCLUDE
+    )
+endmacro()
