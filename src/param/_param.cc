@@ -64,7 +64,7 @@ int Param::ParseParams(const int& argc, const char** argv) {
       prePos = curPos + 1;
     }
   }
-#ifdef NDEBUG
+#ifndef NDEBUG
   std::for_each(argList.begin(), argList.end(),
                 [](const std::string& e) { DLOG(INFO) << e; });
 #endif

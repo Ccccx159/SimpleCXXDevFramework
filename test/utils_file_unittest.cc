@@ -148,8 +148,15 @@ int Test_GetSuffixFromFile() {
 }
 
 int Test_ListFilesInDir() {
-  std::vector<std::string> fl = myutils::ListFilesInDir("./");
+  std::vector<std::string> fl = myutils::ListFilesInDir("./", "dir");
   CHECK_GT(fl.size(), 0) << "Test ListFilesInDir Failed!";
+  fl = myutils::ListFilesInDir("./", "file");
+  CHECK_GT(fl.size(), 0) << "Test ListFilesInDir Failed!";
+  fl = myutils::ListFilesInDir("./", "file", "Temp");
+  CHECK_GT(fl.size(), 0) << "Test ListFilesInDir Failed!";
+  fl = myutils::ListFilesInDir("./", "file", "\\.Temp.+\\..+");
+  CHECK_GT(fl.size(), 0) << "Test ListFilesInDir Failed!";
+
   LOG(INFO) << "Test ListFilesInDir successfully";
   return 0;
 }

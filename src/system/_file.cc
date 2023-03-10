@@ -137,8 +137,13 @@ std::string GetSuffixFromFile(const std::string& f) {
 }
 
 // 列举指定目录下所有文件，
-std::vector<std::string> ListFilesInDir(const std::string& dir) {
+// 列举指定目录下特定类型，或符合关键字的所有内容，
+std::vector<std::string> ListFilesInDir(const std::string& dir,
+                                        const std::string& type,
+                                        const std::string& keyword) {
   std::vector<std::string> fl;
+  int _d_type = type == "dir" ? static_cast<int>(DT_DIR) 
+                              : static_cast<int>(~DT_DIR);
   DIR* fDir = opendir(dir.c_str());
   if (nullptr == fDir) {
     LOG(ERROR) << "Open directory[" << dir << "] failed!";
@@ -146,12 +151,17 @@ std::vector<std::string> ListFilesInDir(const std::string& dir) {
   }
   struct dirent* end = nullptr;
   while ((end = readdir(fDir)) != nullptr) {
-    if (end->d_type != DT_DIR) {
-      fl.push_back(dir[dir.length() - 1] == '/' ? dir + end->d_name
-                                                : dir + "/" + end->d_name);
+    if (end->d_type & _d_type) {
+      std::string fname = std::string(end->d_name);
+      if (std::regex_search(fname, std::regex(keyword)) ||
+          fname.npos != fname.find(keyword) || keyword.length() <= 0 ) {
+        fl.push_back(dir[dir.length() - 1] == '/' ? dir + end->d_name
+                                                  : dir + "/" + end->d_name);
+      }
     }
   }
-#ifdef NDEBUG
+#ifndef NDEBUG
+  DLOG(INFO) << "list path [" << dir << "], type [" << type << "], key word [" << keyword << ']';
   std::for_each(fl.begin(), fl.end(),
                 [](const std::string& it) { DLOG(INFO) << it; });
 #endif

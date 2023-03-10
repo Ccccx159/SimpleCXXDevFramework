@@ -15,7 +15,7 @@ static void CustomLogPrefix(std::ostream &s, const google::LogMessageInfo &l,
  */
 void CustomLogPrefix(std::ostream &s, const google::LogMessageInfo &l,
                             void *) {
-  s << "[HelloApp]"
+  s << "[myutils]"
     << '[' 
     << std::setw(4) << 1900 + l.time.year() << '-'
     << std::setw(2) << 1 + l.time.month() << '-' 

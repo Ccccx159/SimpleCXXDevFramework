@@ -38,8 +38,10 @@ std::string GetFileNameWithoutSuffix(const std::string& f);
 // 截取文件扩展名
 std::string GetSuffixFromFile(const std::string& f);
 
-// 列举指定目录下所有文件，
-std::vector<std::string> ListFilesInDir(const std::string& dir);
+// 列举指定目录下特定类型，或符合关键字的所有内容。type: dir/file
+std::vector<std::string> ListFilesInDir(const std::string& dir,
+                                        const std::string& type,
+                                        const std::string& keyword = "");
 
 // 创建层级目录
 int MkdirsByPath(const std::string& p,
