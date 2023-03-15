@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.9)
 
-option(WITH_SHARED_MODULE_LIB "Build shared libraries in the module" OFF)
+option(WITH_SHARED_LIB "Build shared libraries in the module" OFF)
 
 # compiler configuration
 if(CMAKE_VERSION VERSION_LESS "3.1")
